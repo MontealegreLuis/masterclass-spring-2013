@@ -1,17 +1,21 @@
 <?php
-
-class Index {
+class Controller_Index 
+{
+    protected $config;
     
     protected $db;
     
-    public function __construct($config) {
+    public function __construct($config) 
+    {
+        $this->config = $config;
         $dbconfig = $config['database'];
         $dsn = 'mysql:host=' . $dbconfig['host'] . ';dbname=' . $dbconfig['name'];
         $this->db = new PDO($dsn, $dbconfig['user'], $dbconfig['pass']);
         $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
     
-    public function index() {
+    public function index() 
+    {
         
         $sql = 'SELECT * FROM story ORDER BY created_on DESC';
         $stmt = $this->db->prepare($sql);
@@ -36,6 +40,6 @@ class Index {
         
         $content .= '</ol>';
         
-        require 'layout.phtml';
+        require $this->config['views']['layout_path'] . '/layout.phtml';
     }
 }

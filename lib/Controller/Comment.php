@@ -1,15 +1,19 @@
 <?php
-
-class Comment {
+class Controller_Comment 
+{
+    protected $config;
     
-    public function __construct($config) {
+    public function __construct($config) 
+    {
+        $this->config = $config;
         $dbconfig = $config['database'];
         $dsn = 'mysql:host=' . $dbconfig['host'] . ';dbname=' . $dbconfig['name'];
         $this->db = new PDO($dsn, $dbconfig['user'], $dbconfig['pass']);
         $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
     
-    public function create() {
+    public function create() 
+    {
         if(!isset($_SESSION['AUTHENTICATED'])) {
             die('not auth');
             header("Location: /");
@@ -24,6 +28,5 @@ class Comment {
             filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
         ));
         header("Location: /story/?id=" . $_POST['story_id']);
-    }
-    
+    }    
 }
