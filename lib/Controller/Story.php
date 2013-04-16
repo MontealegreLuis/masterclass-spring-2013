@@ -1,15 +1,19 @@
 <?php
-
-class Story {
+class Controller_Story 
+{
+    protected $config;
     
-    public function __construct($config) {
+    public function __construct($config) 
+    {
+        $this->config = $config;
         $dbconfig = $config['database'];
         $dsn = 'mysql:host=' . $dbconfig['host'] . ';dbname=' . $dbconfig['name'];
         $this->db = new PDO($dsn, $dbconfig['user'], $dbconfig['pass']);
         $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
     
-    public function index() {
+    public function index() 
+    {
         if(!isset($_GET['id'])) {
             header("Location: /");
             exit;
@@ -55,11 +59,12 @@ class Story {
             ';
         }
         
-        require_once 'layout.phtml';
+        require_once $this->config['views']['layout_path'] . '/layout.phtml';
         
     }
     
-    public function create() {
+    public function create() 
+    {
         if(!isset($_SESSION['AUTHENTICATED'])) {
             header("Location: /user/login");
             exit;
@@ -95,7 +100,6 @@ class Story {
             </form>
         ';
         
-        require_once 'layout.phtml';
-    }
-    
+        require_once $this->config['views']['layout_path'] . '/layout.phtml';
+    }    
 }

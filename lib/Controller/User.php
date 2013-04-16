@@ -1,17 +1,21 @@
 <?php
-
-class User {
+class Controller_User 
+{
+    protected $config;
     
     public $db;
     
-    public function __construct($config) {
+    public function __construct($config) 
+    {
+        $this->config = $config;
         $dbconfig = $config['database'];
         $dsn = 'mysql:host=' . $dbconfig['host'] . ';dbname=' . $dbconfig['name'];
         $this->db = new PDO($dsn, $dbconfig['user'], $dbconfig['pass']);
         $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
     
-    public function create() {
+    public function create() 
+    {
         $error = null;
         
         // Do the create
@@ -69,11 +73,11 @@ class User {
             </form>
         ';
         
-        require_once 'layout.phtml';
-        
+        require_once $this->config['views']['layout_path'] . '/layout.phtml';
     }
     
-    public function account() {
+    public function account() 
+    {
         $error = null;
         if(!isset($_SESSION['AUTHENTICATED'])) {
             header("Location: /user/login");
@@ -114,10 +118,11 @@ class User {
             <input type="submit" name="updatepw" value="Create User" />
         </form>';
         
-        require_once 'layout.phtml';
+        require_once $this->config['views']['layout_path'] . '/layout.phtml';
     }
     
-    public function login() {
+    public function login() 
+    {
         $error = null;
         // Do the login
         if(isset($_POST['login'])) {
@@ -149,11 +154,11 @@ class User {
             </form>
         ';
         
-        require_once('layout.phtml');
-        
+        require_once $this->config['views']['layout_path'] . '/layout.phtml';        
     }
     
-    public function logout() {
+    public function logout() 
+    {
         // Log out, redirect
         session_destroy();
         header("Location: /");
