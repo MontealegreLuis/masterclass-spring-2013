@@ -5,31 +5,19 @@ use \Database\MySqlConnection;
 use \Utils\Session;
 use \Model\Story;
 
-class StoryController
+class StoryController extends AbstractController
 {
-    /**
-     * @var array
-     */
-    protected $config;
-
     /**
      * @var \Model\Story
      */
     protected $story;
 
     /**
-     * @var \Session
+     * @return void
      */
-    protected $session;
-
-    /**
-     * @param array $config
-     */
-    public function __construct(array $config)
+    public function loadModels()
     {
-        $this->config = $config;
-        $this->story = new Story(new MySqlConnection($config['database']));
-        $this->session = new Session();
+        $this->story = new Story($this->connection);
     }
 
     public function index()
