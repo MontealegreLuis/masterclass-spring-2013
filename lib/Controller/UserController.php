@@ -5,7 +5,7 @@ use \Database\MySqlConnection;
 use \Model\User;
 use \Utils\Session;
 
-class UserController
+class UserController extends AbstractController
 {
     /**
      * @var \Model\User
@@ -17,7 +17,7 @@ class UserController
      */
     public function loadModels()
     {
-        $this->user = new User(new MySqlConnection($this->config['database']));
+        $this->user = new User($this->connection);
     }
 
     public function create()

@@ -1,10 +1,13 @@
 <?php
 return array(
     'database' => array(
-        'user' => '',
-        'pass' => '',
-        'host' => '',
-        'name' => '',
+        'class' => Database\MySqlConnection::$CLASS,
+        'options' => array(
+            'user' => 'news_user',
+            'pass' => 'n3ws_us3r',
+            'host' => 'localhost',
+            'name' => 'upvote_news',
+        ),
     ),
     'views' => array(
         'view_path' => '',

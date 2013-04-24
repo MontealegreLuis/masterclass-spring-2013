@@ -16,7 +16,7 @@ class IndexController extends AbstractController
      */
     public function loadModels()
     {
-        $this->story = new Story(new MySqlConnection($this->config['database']));
+        $this->story = new Story($this->connection);
     }
 
     public function index()

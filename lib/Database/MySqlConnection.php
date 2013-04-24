@@ -4,6 +4,11 @@ namespace Database;
 class MySqlConnection extends Connection
 {
     /**
+     * @var string
+     */
+    static public $CLASS = __CLASS__;
+
+    /**
      * (non-PHPdoc)
      * @see \Database\Connection::buildDsn()
      */

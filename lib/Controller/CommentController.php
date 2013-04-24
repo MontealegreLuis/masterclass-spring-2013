@@ -17,7 +17,7 @@ class CommentController extends AbstractController
      */
     protected function loadModels()
     {
-        $this->comment = new Comment(new MySqlConnection($this->config['database']));
+        $this->comment = new Comment($this->connection);
     }
 
     public function create()

@@ -2,6 +2,7 @@
 namespace Controller;
 
 use \Session\SessionInterface;
+use \Database\Connection;
 
 abstract class AbstractController
 {
@@ -15,8 +16,19 @@ abstract class AbstractController
      */
     protected $session;
 
-    public function __construct(SessionInterface $session, array $config)
+    /**
+     * @var \Database\Connection
+     */
+    protected $connection;
+
+    /**
+     * @param Connection $connection
+     * @param SessionInterface $session
+     * @param array $config
+     */
+    public function __construct(Connection $connection, SessionInterface $session, array $config)
     {
+        $this->connection = $connection;
         $this->session = $session;
         $this->config = $config;
         $this->loadModels();

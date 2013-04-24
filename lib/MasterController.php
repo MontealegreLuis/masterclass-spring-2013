@@ -25,8 +25,9 @@ class MasterController
         $class = ucfirst(array_shift($call_class));
         $class = "Controller\\{$class}Controller";
         $method = array_shift($call_class);
+        $connection = Factory::getInstance($this->config['database']);
         $session = Factory::getInstance($this->config['session']);
-        $o = new $class($session, $this->config);
+        $o = new $class($connection, $session, $this->config);
 
         return $o->$method();
     }
