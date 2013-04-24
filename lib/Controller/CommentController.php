@@ -5,31 +5,19 @@ use \Database\MySqlConnection;
 use \Model\Comment;
 use \Utils\Session;
 
-class CommentController
+class CommentController extends AbstractController
 {
-    /**
-     * @var array
-     */
-    protected $config;
-
     /**
      * @var \Model\Comment
      */
     protected $comment;
 
     /**
-     * @var \Utils\Session
+     * @return void
      */
-    protected $session;
-
-    /**
-     * @param array $config
-     */
-    public function __construct(array $config)
+    protected function loadModels()
     {
-        $this->config = $config;
-        $this->comment = new Comment(new MySqlConnection($config['database']));
-        $this->session = new Session();
+        $this->comment = new Comment(new MySqlConnection($this->config['database']));
     }
 
     public function create()

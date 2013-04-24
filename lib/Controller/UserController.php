@@ -8,28 +8,16 @@ use \Utils\Session;
 class UserController
 {
     /**
-     * @var array
-     */
-    protected $config;
-
-    /**
      * @var \Model\User
      */
     protected $user;
 
     /**
-     * @var \Utils\Session
+     * @return void
      */
-    protected $session;
-
-    /**
-     * @param array $config
-     */
-    public function __construct(array $config)
+    public function loadModels()
     {
-        $this->config = $config;
-        $this->user = new User(new MySqlConnection($config['database']));
-        $this->session = new Session();
+        $this->user = new User(new MySqlConnection($this->config['database']));
     }
 
     public function create()

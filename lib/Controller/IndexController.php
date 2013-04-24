@@ -4,25 +4,19 @@ namespace Controller;
 use \Database\MySqlConnection;
 use \Model\Story;
 
-class IndexController
+class IndexController extends AbstractController
 {
-    /**
-     * @var array
-     */
-    protected $config;
-
     /**
      * @var \Model\Story
      */
     protected $story;
 
     /**
-     * @param array $config
+     * @return void
      */
-    public function __construct(array $config)
+    public function loadModels()
     {
-        $this->config = $config;
-        $this->story = new Story(new MySqlConnection($config['database']));
+        $this->story = new Story(new MySqlConnection($this->config['database']));
     }
 
     public function index()

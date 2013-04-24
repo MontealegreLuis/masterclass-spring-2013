@@ -6,18 +6,27 @@ return array(
         'host' => '',
         'name' => '',
     ),
-    'routes' => array(
-        '' => 'index/index',
-        'story' => 'story/index',
-        'story/create' => 'story/create',
-        'comment/create' => 'comment/create',
-        'user/create' => 'user/create',
-        'user/account' => 'user/account',
-        'user/login' => 'user/login',
-        'user/logout' => 'user/logout',
-    ),
     'views' => array(
         'view_path' => '',
-        'layout_path' => realpath('../view/layouts'),
+        'layout_path' => 'view/layouts',
+    ),
+    'router' => array(
+        'class' => Router\DefaultRouter::$CLASS,
+        'options' => array(
+            'routes' => array(
+                '' => 'index/index',
+                'story' => 'story/index',
+                'story/create' => 'story/create',
+                'comment/create' => 'comment/create',
+                'user/create' => 'user/create',
+                'user/account' => 'user/account',
+                'user/login' => 'user/login',
+                'user/logout' => 'user/logout',
+            ),
+        ),
+    ),
+    'session' => array(
+        'class' => Session\Session::$CLASS,
+        'options' => array(),
     ),
 );
