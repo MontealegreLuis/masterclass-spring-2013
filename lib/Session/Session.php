@@ -1,12 +1,17 @@
 <?php
-namespace Utils;
+namespace Session;
 
-class Session
+class Session implements SessionInterface
 {
     /**
-     * @param array $values
+     * @var string
      */
-    public function __construct(array $values = array())
+    static public $CLASS = __CLASS__;
+
+    /**
+     * @param array $options
+     */
+    public function __construct(array $options = array())
     {
         session_start();
     }
