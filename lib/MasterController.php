@@ -1,39 +1,47 @@
 <?php
-use \Utils\Session;
-use \Utils\Factory;
+use Di\ConfigurablesFactory;
+
+use \Di\Container;
+use \Di\ConstructorFactory;
 
 class MasterController
 {
     /**
-     * @var array
+     * @var \Di\Container
      */
-    private $config;
+    protected $container;
 
     /**
      * @param array $config
      */
     public function __construct(array $config)
     {
-        $this->_setupConfig($config);
+        $this->setupContainer($config);
     }
 
+    /**
+     * @return string
+     */
     public function execute()
     {
-        $router = Factory::getInstance($this->config['router']);
-        $call = $router->route();
+        $call = $this->container->get('router')->route();
+
         $call_class = $call['call'];
         $class = ucfirst(array_shift($call_class));
         $class = "Controller\\{$class}Controller";
         $method = array_shift($call_class);
-        $connection = Factory::getInstance($this->config['database']);
-        $session = Factory::getInstance($this->config['session']);
-        $o = new $class($connection, $session, $this->config);
 
-        return $o->$method();
+        $controller = $this->container->get($class);
+
+        return $controller->$method();
     }
 
-    private function _setupConfig($config)
+    /**
+     * @param array $config
+     * @return void
+     */
+    protected function setupContainer(array $config)
     {
-        $this->config = $config;
+        $this->container = new Container($config);
     }
 }

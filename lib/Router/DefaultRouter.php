@@ -4,21 +4,16 @@ namespace Router;
 class DefaultRouter implements RouterInterface
 {
     /**
-     * @var string
-     */
-    static public $CLASS = __CLASS__;
-
-    /**
      * @var array
      */
-    protected $config;
+    protected $routes;
 
     /**
      * @param array $config
      */
-    public function __construct(array $config)
+    public function __construct(array $routes)
     {
-        $this->config = $config;
+        $this->routes = $routes;
     }
 
     /**
@@ -37,7 +32,7 @@ class DefaultRouter implements RouterInterface
         $path = str_replace($rb, '', $ruri);
         $return = array();
 
-        foreach($this->config['routes'] as $k => $v) {
+        foreach($this->routes as $k => $v) {
 
             $matches = array();
             $pattern = '$' . $k . '$';

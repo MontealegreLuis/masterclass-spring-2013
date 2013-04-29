@@ -14,14 +14,14 @@ class IndexController extends AbstractController
     /**
      * @return void
      */
-    public function loadModels()
+    public function setStory(Story $story)
     {
-        $this->story = new Story($this->connection);
+        $this->story = $story;
     }
 
     public function index()
     {
-        $stories = $this->story->fetchAllWithCommentCount();
+        $stories = $this->story->fetchAllIncludingCommentCount();
 
         $content = '<ol>';
 
@@ -37,6 +37,6 @@ class IndexController extends AbstractController
 
         $content .= '</ol>';
 
-        require $this->config['views']['layout_path'] . '/layout.phtml';
+        require $this->config['layout_path'] . '/layout.phtml';
     }
 }
