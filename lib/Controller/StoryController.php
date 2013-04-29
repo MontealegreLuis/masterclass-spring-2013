@@ -15,9 +15,9 @@ class StoryController extends AbstractController
     /**
      * @return void
      */
-    public function loadModels()
+    public function setStory(Story $story)
     {
-        $this->story = new Story($this->connection);
+        $this->story = $story;
     }
 
     public function index()
@@ -60,7 +60,7 @@ class StoryController extends AbstractController
             ';
         }
 
-        require_once $this->config['views']['layout_path'] . '/layout.phtml';
+        require_once $this->config['layout_path'] . '/layout.phtml';
 
     }
 
@@ -79,9 +79,9 @@ class StoryController extends AbstractController
                 $error = 'You did not fill in all the fields or the URL did not validate.';
             } else {
                 $id = $this->story->createStory(array(
-                   $_POST['headline'],
-                   $_POST['url'],
-                   $_SESSION['username'],
+                   'headline' => $_POST['headline'],
+                   'url' => $_POST['url'],
+                   'createdBy' => $_SESSION['username'],
                 ));
 
                 header("Location: /story/?id=$id");
@@ -99,6 +99,6 @@ class StoryController extends AbstractController
             </form>
         ';
 
-        require_once $this->config['views']['layout_path'] . '/layout.phtml';
+        require_once $this->config['layout_path'] . '/layout.phtml';
     }
 }

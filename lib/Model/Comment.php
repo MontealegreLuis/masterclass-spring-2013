@@ -9,8 +9,7 @@ class Comment extends AbstractModel
      */
     public function createComment(array $values)
     {
-        $sql = 'INSERT INTO comment (created_by, created_on, story_id, comment) VALUES (?, NOW(), ?, ?)';
-
-        return $this->getConnection()->insert($sql, $values);
+        extract($values);
+        $this->getTable()->insert($comment, $createdBy, $storyId);
     }
 }

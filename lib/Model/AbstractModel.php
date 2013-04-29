@@ -1,36 +1,28 @@
 <?php
 namespace Model;
 
-use \Database\Connection;
+use \Database\Table\TableGateway;
 
 abstract class AbstractModel
 {
     /**
-     * @var \Database\Connection
+     * @var \Database\Table\TableGateway
      */
-    protected $connection;
+    protected $table;
 
     /**
-     * @param \Database\Connection $connection
+     * @param \Database\Table\TableGateway $connection
      */
-    public function __construct(Connection $connection)
+    public function __construct(TableGateway $table)
     {
-        $this->setConnection($connection);
+        $this->table = $table;
     }
 
     /**
      * @return \Database\Connection
      */
-    public function getConnection()
+    protected function getTable()
     {
-        return $this->connection;
-    }
-
-    /**
-     * @param \Database\Connection $connection
-     */
-    public function setConnection(Connection $connection)
-    {
-        $this->connection = $connection;
+        return $this->table;
     }
 }

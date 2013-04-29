@@ -1,35 +1,91 @@
 <?php
+use \Database\Table\UserGateway;
+use \Model\User;
+use \Controller\UserController;
+use \Database\Table\StoryGateway;
+use \Controller\StoryController;
+use \Model\Story;
+use \Controller\IndexController;
+use \Database\Table\CommentGateway;
+use \Model\Comment;
+use \Controller\CommentController;
+use \Di\Container;
+use \Router\DefaultRouter;
+use \Session\Session;
+use \Database\Driver\PdoMySqlDriver;
+
 return array(
-    'database' => array(
-        'class' => Database\MySqlConnection::$CLASS,
-        'options' => array(
-            'user' => 'news_user',
-            'pass' => 'n3ws_us3r',
-            'host' => 'localhost',
-            'name' => 'upvote_news',
+    'router' => function(Container $container) {
+        return new DefaultRouter($container->get('routes'));
+    },
+    'routes' => array(
+        '' => 'index/index',
+        'story' => 'story/index',
+        'story/create' => 'story/create',
+        'comment/create' => 'comment/create',
+        'user/create' => 'user/create',
+        'user/account' => 'user/account',
+        'user/login' => 'user/login',
+        'user/logout' => 'user/logout',
+    ),
+    'session' => function() {
+        return new Session();
+    },
+    'db_driver' => function() {
+        return new PdoMySqlDriver();
+    },
+    'connection' => function(Container $container) {
+        $driver = $container->get('db_driver');
+        extract($container->get('connection_params'));
+
+        return $driver->connect($username, $password, $params);
+    },
+    'connection_params' => array(
+        'username' => '',
+        'password' => '',
+        'params' => array(
+            'host' => '',
+            'dbname' => '',
         ),
     ),
-    'views' => array(
+    'view' => array(
         'view_path' => '',
         'layout_path' => 'view/layouts',
     ),
-    'router' => array(
-        'class' => Router\DefaultRouter::$CLASS,
-        'options' => array(
-            'routes' => array(
-                '' => 'index/index',
-                'story' => 'story/index',
-                'story/create' => 'story/create',
-                'comment/create' => 'comment/create',
-                'user/create' => 'user/create',
-                'user/account' => 'user/account',
-                'user/login' => 'user/login',
-                'user/logout' => 'user/logout',
-            ),
-        ),
-    ),
-    'session' => array(
-        'class' => Session\Session::$CLASS,
-        'options' => array(),
-    ),
+    'Controller\CommentController' => function(Container $container) {
+        $controller = new CommentController(
+            $container->get('session'), $container->get('view')
+        );
+        $comment = new Comment(new CommentGateway($container->get('connection')));
+        $controller->setComment($comment);
+
+        return $controller;
+    },
+    'Controller\UserController' => function(Container $container) {
+        $controller = new UserController(
+            $container->get('session'), $container->get('view')
+        );
+        $user = new User(new UserGateway($container->get('connection')));
+        $controller->setUser($user);
+
+        return $controller;
+    },
+    'Controller\IndexController' => function(Container $container) {
+        $controller = new IndexController(
+            $container->get('session'), $container->get('view')
+        );
+        $story = new Story(new StoryGateway($container->get('connection')));
+        $controller->setStory($story);
+
+        return $controller;
+    },
+    'Controller\StoryController' => function(Container $container) {
+        $controller = new StoryController(
+            $container->get('session'), $container->get('view')
+        );
+        $story = new Story(new StoryGateway($container->get('connection')));
+        $controller->setStory($story);
+
+        return $controller;
+    },
 );
