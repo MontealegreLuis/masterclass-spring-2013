@@ -3,7 +3,6 @@ namespace Controller;
 
 use \Database\MySqlConnection;
 use \Model\User;
-use \Utils\Session;
 
 class UserController extends AbstractController
 {
@@ -15,9 +14,9 @@ class UserController extends AbstractController
     /**
      * @return void
      */
-    public function loadModels()
+    public function setUser(User $user)
     {
-        $this->user = new User($this->connection);
+        $this->user = $user;
     }
 
     public function create()
@@ -75,7 +74,7 @@ class UserController extends AbstractController
             </form>
         ';
 
-        require_once $this->config['views']['layout_path'] . '/layout.phtml';
+        require_once $this->config['layout_path'] . '/layout.phtml';
     }
 
     public function account()
@@ -112,7 +111,7 @@ class UserController extends AbstractController
             <input type="submit" name="updatepw" value="Create User" />
         </form>';
 
-        require_once $this->config['views']['layout_path'] . '/layout.phtml';
+        require_once $this->config['layout_path'] . '/layout.phtml';
     }
 
     public function login()
@@ -144,7 +143,7 @@ class UserController extends AbstractController
             </form>
         ';
 
-        require_once $this->config['views']['layout_path'] . '/layout.phtml';
+        require_once $this->config['layout_path'] . '/layout.phtml';
     }
 
     public function logout()

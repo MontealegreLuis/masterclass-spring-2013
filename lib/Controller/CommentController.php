@@ -13,11 +13,11 @@ class CommentController extends AbstractController
     protected $comment;
 
     /**
-     * @return void
+     * @param \Model\Comment $comment
      */
-    protected function loadModels()
+    public function setComment(Comment $comment)
     {
-        $this->comment = new Comment($this->connection);
+        $this->comment = $comment;
     }
 
     public function create()
@@ -29,9 +29,11 @@ class CommentController extends AbstractController
         }
 
         $this->comment->createComment(array(
-            $_SESSION['username'],
-            $_POST['story_id'],
-            filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
+            'createdBy' => $_SESSION['username'],
+            'storyId' => $_POST['story_id'],
+            'comment' => filter_input(
+                INPUT_POST, 'comment', FILTER_SANITIZE_FULL_SPECIAL_CHARS
+            ),
         ));
         header("Location: /story/?id=" . $_POST['story_id']);
     }

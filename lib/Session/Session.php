@@ -11,7 +11,7 @@ class Session implements SessionInterface
     /**
      * @param array $options
      */
-    public function __construct(array $options = array())
+    public function __construct()
     {
         session_start();
     }

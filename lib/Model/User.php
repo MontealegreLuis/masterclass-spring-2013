@@ -5,10 +5,10 @@ class User extends AbstractModel
 {
     public function createUser($values)
     {
-        $sql = 'INSERT INTO user (username, email, password) VALUES (?, ?, ?)';
-        $values['password'] = $this->hashPassword($values['username'], $values['password']);
+        extract($values);
 
-        return $this->getConnection()->insert($sql, $values);
+        return $this->getTable()
+                    ->insert($username, $this->hashPassword($username, $password));
     }
 
     /**
@@ -17,13 +17,11 @@ class User extends AbstractModel
      */
     public function authenticate(array $credentials)
     {
-        $username = $credentials['user'];
-        $password = $credentials['pass'];
-        $password = $this->hashPassword($username, $password);
+        extract($credentials);
 
-        $sql ='SELECT * FROM user WHERE username = ? AND password = ? LIMIT 1';
-
-        return $this->getConnection()->fetchOne($sql, array($username, $password));
+        return $this->getTable()->findOneByUsernameAndPassword(
+            $user, $this->hashPassword($user, $pass)
+        );
     }
 
     /**
@@ -32,9 +30,7 @@ class User extends AbstractModel
      */
     public function fetchUser($username)
     {
-        $sql = 'SELECT * FROM user WHERE username = ?';
-
-        return $this->getConnection()->fetchOne($sql, array($username));
+        return $this->getTable()->findOneByUsername($username);
     }
 
     /**
@@ -44,11 +40,9 @@ class User extends AbstractModel
      */
     public function updatePassword($username, $password)
     {
-        $sql = 'UPDATE user SET password = ? WHERE username = ?';
-
-        $password = $this->hashPassword($username, $password);
-
-        $this->getConnection()->update($sql, array($password, $username));
+        $this->getTable()->updatePassword(
+            $username, $this->hashPassword($username, $password)
+        );
     }
 
     /**
