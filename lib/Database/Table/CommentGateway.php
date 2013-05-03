@@ -1,7 +1,7 @@
 <?php
 namespace Database\Table;
 
-class CommentGateway extends TableGateway
+class CommentGateway extends TableGateway implements CommentGatewayInterface
 {
     /**
      * @param string $comment

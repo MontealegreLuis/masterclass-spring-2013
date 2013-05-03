@@ -1,8 +1,5 @@
 <?php
-use Di\ConfigurablesFactory;
-
 use \Di\Container;
-use \Di\ConstructorFactory;
 
 class MasterController
 {
@@ -24,16 +21,26 @@ class MasterController
      */
     public function execute()
     {
-        $call = $this->container->get('router')->route();
+        $call = $this->container->get('router')->route($this->container->get('request'));
 
-        $call_class = $call['call'];
-        $class = ucfirst(array_shift($call_class));
-        $class = "Controller\\{$class}Controller";
-        $method = array_shift($call_class);
+        $callClass = $call['call'];
+        $class = ucfirst(array_shift($callClass));
+        $controllerClass = "Controller\\{$class}Controller";
+        $method = array_shift($callClass);
 
-        $controller = $this->container->get($class);
+        $controller = $this->container->get($controllerClass);
 
-        return $controller->$method();
+        $response = $controller->dispatch($method);
+
+        if (!$response->isRedirect()) {
+
+            $view = $this->container->get('view');
+            $view->setTemplate(sprintf('%s/%s', lcfirst($class), $method));
+            $view->assign($controller->getResults());
+            $response->setBody($view->render());
+        }
+
+        $response->send();
     }
 
     /**

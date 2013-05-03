@@ -1,11 +1,10 @@
 <?php
 namespace Controller;
 
-use \Database\MySqlConnection;
+use \Http\HttpController;
 use \Model\Comment;
-use \Utils\Session;
 
-class CommentController extends AbstractController
+class CommentController extends HttpController
 {
     /**
      * @var \Model\Comment
@@ -20,21 +19,31 @@ class CommentController extends AbstractController
         $this->comment = $comment;
     }
 
+    /**
+     * @return \Model\Comment
+     */
+    protected function getComment()
+    {
+        return $this->comment;
+    }
+
     public function create()
     {
-        if(!$this->session->get('AUTHENTICATED')) {
-            die('not auth');
-            header("Location: /");
-            exit;
+        if ( ! $this->getSession()->get('AUTHENTICATED')) {
+
+            return $this->getResponse()->setRedirect('/');
         }
 
-        $this->comment->createComment(array(
-            'createdBy' => $_SESSION['username'],
-            'storyId' => $_POST['story_id'],
-            'comment' => filter_input(
-                INPUT_POST, 'comment', FILTER_SANITIZE_FULL_SPECIAL_CHARS
-            ),
-        ));
-        header("Location: /story/?id=" . $_POST['story_id']);
+        $storyId = $this->getRequest()->getPost()->get('story_id');
+
+        if ($this->getComment()->isValid($this->getRequest()->getPost()->toArray())) {
+
+            $this->getComment()->createComment($this->getSession()->get('username'));
+
+            return $this->getResponse()->setRedirect("/story/?id={$storyId}");
+        }
+
+        $this->addResult('story', array('id' => $storyId));
+        $this->addResult('errors', $this->getComment()->getErrors());
     }
 }

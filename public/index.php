@@ -10,4 +10,4 @@ $autoloader->register();
 
 $framework = new MasterController(require_once 'config/config.php');
 
-echo $framework->execute();
+$framework->execute();

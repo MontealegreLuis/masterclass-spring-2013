@@ -1,38 +1,22 @@
 <?php
 namespace Session;
 
-class Session implements SessionInterface
-{
-    /**
-     * @var string
-     */
-    static public $CLASS = __CLASS__;
+use \Utils\Map;
 
+class Session extends Map implements SessionInterface
+{
     /**
      * @param array $options
      */
-    public function __construct()
+    public function __construct(array &$values = array())
     {
         session_start();
-    }
 
-    /**
-     * @param string $key
-     * @param string $default
-     * @return string
-     */
-    public function get($key, $default = null)
-    {
-        return isset($_SESSION[$key]) ? $_SESSION[$key] : $default;
-    }
-
-    /**
-     * @param string $key
-     * @param string $value
-     */
-    public function set($key, $value)
-    {
-        $_SESSION[$key] =$value;
+        if (empty($values)) {
+            $this->values = &$_SESSION;
+        } else {
+            $this->values = $values;
+        }
     }
 
     /**
@@ -49,6 +33,5 @@ class Session implements SessionInterface
     public function destroy()
     {
         session_destroy();
-        unset($_SESSION);
     }
 }

@@ -1,0 +1,23 @@
+<a class="headline" href="<?php echo $this->story['url'] ?>">
+    <?php echo $this->story['headline'] ?>
+</a><br />
+
+<span class="details">
+    <?php echo $this->story['created_by'] ?> |
+    <?php echo $this->story['comment_count'] ?> Comments |
+    <?php echo date('n/j/Y g:i a', strtotime($this->story['created_on'])) ?>
+</span>
+
+<?php if ($this->isAuthenticated) : ?>
+    <?php $this->renderTemplate('comment/create.phtml') ?>
+<?php endif ?>
+
+<?php foreach($this->comments as $comment) : ?>
+    <div class="comment">
+        <span class="comment_details">
+            <?php echo $comment['created_by'] ?> |
+            <?php echo date('n/j/Y g:i a', strtotime($this->story['created_on'])) ?>
+        </span>
+        <?php echo $comment['comment'] ?>
+    </div>
+<?php endforeach ?>

@@ -1,10 +1,10 @@
 <?php
 namespace Controller;
 
-use \Database\MySqlConnection;
+use \Http\HttpController;
 use \Model\Story;
 
-class IndexController extends AbstractController
+class IndexController extends HttpController
 {
     /**
      * @var \Model\Story
@@ -19,24 +19,19 @@ class IndexController extends AbstractController
         $this->story = $story;
     }
 
+    /**
+     * @return \Model\Story
+     */
+    public function getStory()
+    {
+        return $this->story;
+    }
+
+    /**
+     * @return array
+     */
     public function index()
     {
-        $stories = $this->story->fetchAllIncludingCommentCount();
-
-        $content = '<ol>';
-
-        foreach($stories as $story) {
-            $content .= '
-                <li>
-                <a class="headline" href="' . $story['url'] . '">' . $story['headline'] . '</a><br />
-                <span class="details">' . $story['created_by'] . ' | <a href="/story/?id=' . $story['id'] . '">' . $story['comment_count'] . ' Comments</a> |
-                ' . date('n/j/Y g:i a', strtotime($story['created_on'])) . '</span>
-                </li>
-            ';
-        }
-
-        $content .= '</ol>';
-
-        require $this->config['layout_path'] . '/layout.phtml';
+        $this->addResult('stories', $this->getStory()->fetchAllIncludingCommentCount());
     }
 }

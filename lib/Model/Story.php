@@ -1,17 +1,55 @@
 <?php
 namespace Model;
 
+use \Database\Table\StoryGatewayInterface;
+use \Utils\ValidatorInterface;
+
 class Story extends AbstractModel
 {
     /**
-     * @param array $values
+     * @var \Database\Table\StoryGatewayInterface
+     */
+    protected $storyGateway;
+
+    /**
+     * @param \Database\Table\StoryGatewayInterface $storyGateway
+     */
+    public function __construct(StoryGatewayInterface $storyGateway)
+    {
+        $this->rules = array(
+            'filters' => array(
+                'headline' => 'string',
+                'url' => 'url',
+            ),
+            'validators' => array(
+                'headline' => array(
+                    'required' => 'Please provide a headline',
+                ),
+                'url' => array(
+                    'url' => 'Please provide a valid URL',
+                )
+            ),
+        );
+        $this->storyGateway = $storyGateway;
+    }
+
+    /**
+     * @return \Database\Table\StoryGatewayInterface
+     */
+    protected function getStoryGateway()
+    {
+        return $this->storyGateway;
+    }
+
+    /**
+     * @param string $createdBy
      * @return string
      */
-    public function createStory(array $values)
+    public function createStory($createdBy)
     {
-        extract($values);
+        extract($this->getValidator()->getValues());
 
-        return $this->getTable()->insert($headline, $url, $createdBy);
+        return $this->getStoryGateway()->insert($headline, $url, $createdBy);
     }
 
     /**
@@ -19,7 +57,7 @@ class Story extends AbstractModel
      */
     public function fetchAllIncludingCommentCount()
     {
-        return $this->getTable()->findAll();
+        return $this->getStoryGateway()->findAll();
     }
 
     /**
@@ -28,7 +66,7 @@ class Story extends AbstractModel
      */
     public function fetchStoryById($storyId)
     {
-        return $this->getTable()->findOneById($storyId);
+        return $this->getStoryGateway()->findOneById($storyId);
     }
 
     /**
@@ -37,6 +75,6 @@ class Story extends AbstractModel
      */
     public function fetchStoryComments($storyId)
     {
-        return $this->getTable()->findCommentsByStoryId($storyId);
+        return $this->getStoryGateway()->findCommentsByStoryId($storyId);
     }
 }

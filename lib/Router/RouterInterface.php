@@ -1,7 +1,13 @@
 <?php
 namespace Router;
 
+use \Http\RequestInterface;
+
 interface RouterInterface
 {
-    public function route();
+    /**
+     * @param RequestInterface $request
+     * @return array
+     */
+    public function route(RequestInterface $request);
 }
