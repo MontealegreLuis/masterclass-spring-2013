@@ -1,4 +1,9 @@
 <?php
+use \Observer\IsAuthenticatedObserver;
+use \Utils\Validator;
+use \Http\Request;
+use \Http\Response;
+use \View\View;
 use \Database\Table\UserGateway;
 use \Model\User;
 use \Controller\UserController;
@@ -41,51 +46,77 @@ return array(
         return $driver->connect($username, $password, $params);
     },
     'connection_params' => array(
-        'username' => '',
-        'password' => '',
+        'username' => 'news_user',
+        'password' => 'n3ws_us3r',
         'params' => array(
-            'host' => '',
-            'dbname' => '',
+            'host' => 'localhost',
+            'dbname' => 'upvote_news',
         ),
     ),
-    'view' => array(
-        'view_path' => '',
-        'layout_path' => 'view/layouts',
-    ),
-    'Controller\CommentController' => function(Container $container) {
+    'view' => function() {
+        $view = new View(realpath('view'));
+        $view->setLayout('layouts/layout.phtml');
+
+        return $view;
+    },
+    'request' => function() {
+        return new Request();
+    },
+    'response' => function() {
+        return new Response();
+    },
+    'validator' => function () {
+        return new Validator();
+    },
+    'is_auth_observer' => function() {
+        return new IsAuthenticatedObserver();
+    },
+    'Controller\CommentController' => function(Container $c) {
         $controller = new CommentController(
-            $container->get('session'), $container->get('view')
+            $c->get('request'), $c->get('response'), $c->get('session')
         );
-        $comment = new Comment(new CommentGateway($container->get('connection')));
+        $comment = new Comment($c->get('validator'), $c->get('comment_gateway'));
         $controller->setComment($comment);
+        $controller->attach($c->get('is_auth_observer'));
 
         return $controller;
     },
-    'Controller\UserController' => function(Container $container) {
+    'comment_gateway' => function(Container $c) {
+        return new CommentGateway($c->get('connection'));
+    },
+    'Controller\UserController' => function(Container $c) {
         $controller = new UserController(
-            $container->get('session'), $container->get('view')
+            $c->get('request'), $c->get('response'), $c->get('session')
         );
-        $user = new User(new UserGateway($container->get('connection')));
+        $user = new User($c->get('validator'), $c->get('user_gateway'));
         $controller->setUser($user);
 
         return $controller;
     },
-    'Controller\IndexController' => function(Container $container) {
+    'user_gateway' => function(Container $c) {
+        return new UserGateway($c->get('connection'));
+    },
+    'Controller\IndexController' => function(Container $c) {
         $controller = new IndexController(
-            $container->get('session'), $container->get('view')
+            $c->get('request'), $c->get('response'), $c->get('session')
         );
-        $story = new Story(new StoryGateway($container->get('connection')));
+        $story = new Story($c->get('validator'), $c->get('story_gateway'));
         $controller->setStory($story);
+        $controller->attach($c->get('is_auth_observer'));
 
         return $controller;
     },
-    'Controller\StoryController' => function(Container $container) {
+    'Controller\StoryController' => function(Container $c) {
         $controller = new StoryController(
-            $container->get('session'), $container->get('view')
+            $c->get('request'), $c->get('response'), $c->get('session')
         );
-        $story = new Story(new StoryGateway($container->get('connection')));
+        $story = new Story($c->get('validator'), $c->get('story_gateway'));
         $controller->setStory($story);
+        $controller->attach($c->get('is_auth_observer'));
 
         return $controller;
+    },
+    'story_gateway' => function(Container $c) {
+        return new StoryGateway($c->get('connection'));
     },
 );

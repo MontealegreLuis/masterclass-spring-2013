@@ -1,7 +1,7 @@
 <?php
 namespace Database\Table;
 
-class UserGateway extends TableGateway
+class UserGateway extends TableGateway implements UserGatewayInterface
 {
     /**
      * @param string $username

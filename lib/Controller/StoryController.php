@@ -1,11 +1,10 @@
 <?php
 namespace Controller;
 
-use \Database\MySqlConnection;
-use \Utils\Session;
+use \Http\HttpController;
 use \Model\Story;
 
-class StoryController extends AbstractController
+class StoryController extends HttpController
 {
     /**
      * @var \Model\Story
@@ -20,85 +19,57 @@ class StoryController extends AbstractController
         $this->story = $story;
     }
 
+    /**
+     * @return \Model\Story
+     */
+    protected function getStory()
+    {
+        return $this->story;
+    }
+
     public function index()
     {
-        if(!isset($_GET['id'])) {
-            header("Location: /");
-            exit;
+        $storyId = $this->getRequest()->getQuery()->get('id');
+
+        if ( ! $storyId) {
+
+            return $this->getResponse()->setRedirect('/');
         }
 
-        $story = $this->story->fetchStoryById((int)$_GET['id']);
+        $story = $this->getStory()->fetchStoryById($storyId);
 
-        if (!$story) {
-            header("Location: /");
-            exit;
+        if ( ! $story) {
+
+            return $this->getResponse()->setRedirect('/');
         }
 
-        $comments = $this->story->fetchStoryComments($story['id']);
+        $comments = $this->getStory()->fetchStoryComments($storyId);
 
-        $content = '
-            <a class="headline" href="' . $story['url'] . '">' . $story['headline'] . '</a><br />
-            <span class="details">' . $story['created_by'] . ' | ' . $story['comment_count'] . ' Comments |
-            ' . date('n/j/Y g:i a', strtotime($story['created_on'])) . '</span>
-        ';
-
-        if ($this->session->get('AUTHENTICATED')) {
-            $content .= '
-            <form method="post" action="/comment/create">
-            <input type="hidden" name="story_id" value="' . $_GET['id'] . '" />
-            <textarea cols="60" rows="6" name="comment"></textarea><br />
-            <input type="submit" name="submit" value="Submit Comment" />
-            </form>
-            ';
-        }
-
-        foreach($comments as $comment) {
-            $content .= '
-                <div class="comment"><span class="comment_details">' . $comment['created_by'] . ' | ' .
-                date('n/j/Y g:i a', strtotime($story['created_on'])) . '</span>
-                ' . $comment['comment'] . '</div>
-            ';
-        }
-
-        require_once $this->config['layout_path'] . '/layout.phtml';
-
+        $this->addResult('story', $story);
+        $this->addResult('comments', $comments);
     }
 
     public function create()
     {
-        if(!$this->session->get('AUTHENTICATED')) {
-            header("Location: /user/login");
-            exit;
+        if ( ! $this->getSession()->get('AUTHENTICATED')) {
+
+            return $this->getResponse()->setRedirect('/user/login');
         }
 
-        $error = '';
-        if(isset($_POST['create'])) {
-            if(!isset($_POST['headline']) || !isset($_POST['url']) ||
-               !filter_input(INPUT_POST, 'url', FILTER_VALIDATE_URL)) {
+        $this->addResult('errors', array());
 
-                $error = 'You did not fill in all the fields or the URL did not validate.';
+        if ($this->getRequest()->isPost()) {
+
+            if ($this->getStory()->isValid($this->getRequest()->getPost()->toArray())) {
+
+                $this->getStory()->createStory($this->getSession()->get('username'));
+
+                return $this->getResponse()->setRedirect('/');
+
             } else {
-                $id = $this->story->createStory(array(
-                   'headline' => $_POST['headline'],
-                   'url' => $_POST['url'],
-                   'createdBy' => $_SESSION['username'],
-                ));
 
-                header("Location: /story/?id=$id");
-                exit;
+                $this->addResult('errors', $this->getStory()->getErrors());
             }
         }
-
-        $content = '
-            <form method="post">
-                ' . $error . '<br />
-
-                <label>Headline:</label> <input type="text" name="headline" value="" /> <br />
-                <label>URL:</label> <input type="text" name="url" value="" /><br />
-                <input type="submit" name="create" value="Create" />
-            </form>
-        ';
-
-        require_once $this->config['layout_path'] . '/layout.phtml';
     }
 }
