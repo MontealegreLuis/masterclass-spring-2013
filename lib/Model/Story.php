@@ -34,33 +34,6 @@ class Story extends AbstractModel
     }
 
     /**
-     * @return \Utils\ValidatorInterface
-     */
-    protected function getValidator()
-    {
-        return $this->validator;
-    }
-
-    /**
-     * @param array $values
-     * @return boolean
-     */
-    public function isValid(array $values)
-    {
-        $this->getValidator()->setRules($this->rules);
-
-        return $this->getValidator()->isValid($values);
-    }
-
-    /**
-     * @return array
-     */
-    public function getErrors()
-    {
-        return $this->getValidator()->getErrorMessages();
-    }
-
-    /**
      * @return \Database\Table\StoryGatewayInterface
      */
     protected function getStoryGateway()

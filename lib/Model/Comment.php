@@ -30,7 +30,6 @@ class Comment extends AbstractModel
                 )
             ),
         );
-        $this->validator = $validator;
         $this->commentGateway = $commentGateway;
     }
 
