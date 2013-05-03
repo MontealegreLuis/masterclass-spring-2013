@@ -56,8 +56,6 @@ class StoryController extends HttpController
             return $this->getResponse()->setRedirect('/user/login');
         }
 
-        $this->addResult('errors', array());
-
         if ($this->getRequest()->isPost()) {
 
             if ($this->getStory()->isValid($this->getRequest()->getPost()->toArray())) {

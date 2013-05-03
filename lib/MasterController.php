@@ -21,7 +21,7 @@ class MasterController
      */
     public function execute()
     {
-        $call = $this->container->get('router')->route();
+        $call = $this->container->get('router')->route($this->container->get('request'));
 
         $callClass = $call['call'];
         $class = ucfirst(array_shift($callClass));

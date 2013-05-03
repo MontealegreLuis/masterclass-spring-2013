@@ -48,11 +48,18 @@ class Validator implements ValidatorInterface
                 case 'string':
                     $this->values[$key] = filter_var($values[$key], FILTER_SANITIZE_STRING);
                     break;
+
                 case 'url':
                     $this->values[$key] = filter_var($values[$key], FILTER_SANITIZE_URL);
                     break;
+
                 case 'integer':
                     $this->values[$key] = filter_var($values[$key], FILTER_SANITIZE_NUMBER_INT);
+                    break;
+
+                case 'email':
+                    $this->values[$key] = filter_var($values[$key], FILTER_SANITIZE_EMAIL);
+                    break;
             }
         }
     }
@@ -70,10 +77,18 @@ class Validator implements ValidatorInterface
                             $this->errorMessages[] = $message;
                         }
                         break;
+
                     case 'url':
                         if (!filter_var($this->values[$key], FILTER_VALIDATE_URL)) {
                             $this->errorMessages[] = $message;
                         }
+                        break;
+
+                    case 'email':
+                        if (!filter_var($this->values[$key], FILTER_VALIDATE_EMAIL)) {
+                            $this->errorMessages[] = $message;
+                        }
+                        break;
                 }
             }
         }

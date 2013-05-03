@@ -8,11 +8,11 @@ class UserGateway extends TableGateway implements UserGatewayInterface
      * @param string $password
      * @return string
      */
-    public function insert($username, $password)
+    public function insert($username, $email, $password)
     {
         $sql = 'INSERT INTO user (username, email, password) VALUES (?, ?, ?)';
 
-        $this->executeQuery($sql, array($username, $password));
+        $this->executeQuery($sql, array($username, $email, $password));
 
         return $this->getConnection()->lastInsertId();
     }

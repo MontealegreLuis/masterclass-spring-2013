@@ -1,6 +1,8 @@
 <?php
 namespace Router;
 
+use \Http\RequestInterface;
+
 class DefaultRouter implements RouterInterface
 {
     /**
@@ -20,15 +22,18 @@ class DefaultRouter implements RouterInterface
      * (non-PHPdoc)
      * @see \Router\RouterInterface::route()
      */
-    public function route()
+    public function route(RequestInterface $request)
     {
-        if (isset($_SERVER['REDIRECT_BASE'])) {
-            $rb = $_SERVER['REDIRECT_BASE'];
+        if ($request->getServer()->get('REDIRECT_BASE')) {
+
+            $rb = $request->getServer()->get('REDIRECT_BASE');
+
         } else {
+
             $rb = '';
         }
 
-        $ruri = $_SERVER['REQUEST_URI'];
+        $ruri = $request->getServer()->get('REQUEST_URI');
         $path = str_replace($rb, '', $ruri);
         $return = array();
 

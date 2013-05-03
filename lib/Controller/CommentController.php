@@ -29,7 +29,7 @@ class CommentController extends HttpController
 
     public function create()
     {
-        if (!$this->session->get('AUTHENTICATED')) {
+        if ( ! $this->getSession()->get('AUTHENTICATED')) {
 
             return $this->getResponse()->setRedirect('/');
         }

@@ -4,28 +4,17 @@ namespace Model;
 use \Utils\ValidatorInterface;
 use \Database\Table\CommentGatewayInterface;
 
-class Comment
+class Comment extends AbstractModel
 {
-    /**
-     * @var \Utils\ValidatorInterface
-     */
-    protected $validator;
-
     /**
      * @var \Database\Table\CommentGatewayInterface
      */
     protected $commentGateway;
 
     /**
-     * @var array
-     */
-    protected $rules;
-
-    /**
-     * @param \Utils\ValidatorInterface $validator
      * @param \Database\Table\CommentGatewayInterface $storyGateway
      */
-    public function __construct(ValidatorInterface $validator, CommentGatewayInterface $commentGateway)
+    public function __construct(CommentGatewayInterface $commentGateway)
     {
         $this->rules = array(
             'filters' => array(
@@ -51,33 +40,6 @@ class Comment
     protected function getCommentGateway()
     {
         return $this->commentGateway;
-    }
-
-    /**
-     * @return \Utils\ValidatorInterface
-     */
-    protected function getValidator()
-    {
-        return $this->validator;
-    }
-
-    /**
-     * @param array $values
-     * @return boolean
-     */
-    public function isValid(array $values)
-    {
-        $this->getValidator()->setRules($this->rules);
-
-        return $this->getValidator()->isValid($values);
-    }
-
-    /**
-     * @return array
-     */
-    public function getErrors()
-    {
-        return $this->getValidator()->getErrorMessages();
     }
 
     /**

@@ -4,28 +4,17 @@ namespace Model;
 use \Database\Table\StoryGatewayInterface;
 use \Utils\ValidatorInterface;
 
-class Story
+class Story extends AbstractModel
 {
-    /**
-     * @var \Utils\ValidatorInterface
-     */
-    protected $validator;
-
     /**
      * @var \Database\Table\StoryGatewayInterface
      */
     protected $storyGateway;
 
     /**
-     * @var array
-     */
-    protected $rules;
-
-    /**
-     * @param \Utils\ValidatorInterface $validator
      * @param \Database\Table\StoryGatewayInterface $storyGateway
      */
-    public function __construct(ValidatorInterface $validator, StoryGatewayInterface $storyGateway)
+    public function __construct(StoryGatewayInterface $storyGateway)
     {
         $this->rules = array(
             'filters' => array(
@@ -41,7 +30,6 @@ class Story
                 )
             ),
         );
-        $this->validator = $validator;
         $this->storyGateway = $storyGateway;
     }
 

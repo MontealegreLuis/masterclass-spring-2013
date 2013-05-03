@@ -27,65 +27,20 @@ class UserController extends HttpController
         return $this->user;
     }
 
-    /**
-     * @todo
-     */
     public function create()
     {
-        $error = null;
+        if ($this->getRequest()->isPost()) {
 
-        // Do the create
-        if(isset($_POST['create'])) {
-            if(empty($_POST['username']) || empty($_POST['email']) ||
-               empty($_POST['password']) || empty($_POST['password_check'])) {
-                $error = 'You did not fill in all required fields.';
-            }
+            if ($this->getUser()->isValid($this->getRequest()->getPost()->toArray())) {
 
-            if(is_null($error)) {
-                if(!filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL)) {
-                    $error = 'Your email address is invalid';
-                }
-            }
+                $this->getUser()->createUser();
+                $this->logout();
 
-            if(is_null($error)) {
-                if($_POST['password'] != $_POST['password_check']) {
-                    $error = "Your passwords didn't match.";
-                }
-            }
+            } else {
 
-            if (is_null($error)) {
-
-                if ($this->user->fetchUser($_POST['username'])) {
-                    $error = 'Your chosen username already exists. Please choose another.';
-                }
-            }
-
-            if (is_null($error)) {
-
-                $this->user->createUser(array(
-                    $_POST['username'],
-                    $_POST['email'],
-                    $_POST['password'],
-                ));
-
-                header("Location: /user/login");
-                exit;
+                $this->addResult('errors', $this->getUser()->getErrors());
             }
         }
-        // Show the create form
-
-        $content = '
-            <form method="post">
-                ' . $error . '<br />
-                <label>Username</label> <input type="text" name="username" value="" /><br />
-                <label>Email</label> <input type="text" name="email" value="" /><br />
-                <label>Password</label> <input type="password" name="password" value="" /><br />
-                <label>Password Again</label> <input type="password" name="password_check" value="" /><br />
-                <input type="submit" name="create" value="Create User" />
-            </form>
-        ';
-
-        require_once $this->config['layout_path'] . '/layout.phtml';
     }
 
     public function account()
@@ -97,8 +52,6 @@ class UserController extends HttpController
         $username = $this->getSession()->get('username');
 
         $this->addResult('details', $this->getUser()->fetchUser($username));
-        $this->addResult('errors', array());
-        $this->addResult('message', '');
 
         if ($this->getRequest()->isPost()) {
 
@@ -120,8 +73,6 @@ class UserController extends HttpController
 
     public function login()
     {
-        $this->addResult('errors', array());
-
         if ($this->getRequest()->isPost()) {
 
             $username = $this->getRequest()->getPost()->get('user');
@@ -143,6 +94,6 @@ class UserController extends HttpController
     public function logout()
     {
         $this->getSession()->destroy();
-        $this->getResponse()->setRedirect('/');
+        $this->getResponse()->setRedirect('/user/login');
     }
 }

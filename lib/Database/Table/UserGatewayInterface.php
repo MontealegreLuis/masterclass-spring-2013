@@ -8,7 +8,7 @@ interface UserGatewayInterface
      * @param string $password
      * @return string
      */
-    public function insert($username, $password);
+    public function insert($username, $email, $password);
 
     /**
      * @param string $username

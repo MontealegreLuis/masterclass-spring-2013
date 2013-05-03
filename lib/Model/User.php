@@ -5,22 +5,12 @@ use \Session\SessionInterface;
 use \Database\Table\UserGatewayInterface;
 use \Utils\ValidatorInterface;
 
-class User
+class User extends AbstractModel
 {
-    /**
-     * @var \Utils\ValidatorInterface
-     */
-    protected $validator;
-
     /**
      * @var \Database\Table\UserGatewayInterface
      */
     protected $userGateway;
-
-    /**
-     * @var array
-     */
-    protected $rules;
 
     /**
      * @var array
@@ -31,21 +21,28 @@ class User
      * @param \Utils\ValidatorInterface $validator
      * @param \Database\Table\StoryGatewayInterface $storyGateway
      */
-    public function __construct(ValidatorInterface $validator, UserGatewayInterface $userGateway)
+    public function __construct(UserGatewayInterface $userGateway)
     {
-        //TODO: fix this validations
         $this->rules = array(
             'filters' => array(
-                'headline' => 'string',
-                'url' => 'url',
+                'username' => 'string',
+                'email' => 'email',
+                'password' => 'string',
+                'password_check' => 'string',
             ),
             'validators' => array(
-                'headline' => array(
-                    array('required' => 'Please provide a headline')
+                'username' => array(
+                    'required' => 'Please provide a username',
                 ),
-                'url' => array(
-                    array('url' => 'Please provide a valid URL'),
-                )
+                'email' => array(
+                    'email' => 'Please provide a valid email',
+                ),
+                'password' => array(
+                    'required' => 'Please provide a password',
+                ),
+                'password_check' => array(
+                    'required' => 'Please confirm your password',
+                ),
             ),
         );
         $this->changePasswordRules = array(
@@ -62,7 +59,6 @@ class User
                 )
             ),
         );
-        $this->validator = $validator;
         $this->userGateway = $userGateway;
     }
 
@@ -75,14 +71,6 @@ class User
     }
 
     /**
-     * @return \Utils\ValidatorInterface
-     */
-    protected function getValidator()
-    {
-        return $this->validator;
-    }
-
-    /**
      * @return \Database\Table\UserGatewayInterface
      */
     protected function getUserGateway()
@@ -90,12 +78,45 @@ class User
         return $this->userGateway;
     }
 
-    public function createUser($values)
+    /**
+     * Validate that passwords match and that username is unique
+     *
+     * @see \Model\AbstractModel::isValid()
+     */
+    public function isValid(array $values)
     {
-        extract($values);
+        return       parent::isValid($values)
+                &&   $this->validatePasswords($values)
+                && ! $this->usernameAlreadyExist($values['username']);
+    }
 
-        return $this->getTable()
-                    ->insert($username, $this->hashPassword($username, $password));
+    /**
+     * @param string $username
+     * @return boolean
+     */
+    public function usernameAlreadyExist($username)
+    {
+        $user = $this->getUserGateway()->findOneByUsername($username);
+
+        if (! empty($user)) {
+
+            $this->getValidator()->addErrorMessage('The provided username already exist.');
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param array $values
+     */
+    public function createUser()
+    {
+        extract($this->getValidator()->getValues());
+
+        return $this->getUserGateway()
+                    ->insert($username, $email, $this->hashPassword($username, $password));
     }
 
     /**
@@ -146,13 +167,24 @@ class User
         $this->getValidator()->setRules($this->getChangePasswordRules());
         $isValid = $this->getValidator()->isValid($values);
 
-        if ($isValid && $values['password'] !== $values['password_check']) {
+        return $isValid && $this->validatePasswords($values);
+    }
 
-            $isValid = false;
+    /**
+     * @param string $password
+     * @param string $passwordCheck
+     * @return boolean
+     */
+    protected function validatePasswords(array $values)
+    {
+        if ($values['password'] !== $values['password_check']) {
+
             $this->getValidator()->addErrorMessage('The password fields did not match.');
+
+            return false;
         }
 
-        return $isValid;
+        return true;
     }
 
     /**
@@ -165,14 +197,6 @@ class User
         $this->getUserGateway()->updatePassword(
             $username, $this->hashPassword($username, $password)
         );
-    }
-
-    /**
-     * @return array
-     */
-    public function getErrors()
-    {
-        return $this->getValidator()->getErrorMessages();
     }
 
     /**
