@@ -75,7 +75,8 @@ return array(
         $controller = new CommentController(
             $c->get('request'), $c->get('response'), $c->get('session')
         );
-        $comment = new Comment($c->get('validator'), $c->get('comment_gateway'));
+        $comment = new Comment($c->get('comment_gateway'));
+        $comment->setValidator($c->get('validator'));
         $controller->setComment($comment);
         $controller->attach($c->get('is_auth_observer'));
 
@@ -88,8 +89,10 @@ return array(
         $controller = new UserController(
             $c->get('request'), $c->get('response'), $c->get('session')
         );
-        $user = new User($c->get('validator'), $c->get('user_gateway'));
+        $user = new User($c->get('user_gateway'));
+        $user->setValidator($c->get('validator'));
         $controller->setUser($user);
+        $controller->attach($c->get('is_auth_observer'));
 
         return $controller;
     },
@@ -100,8 +103,7 @@ return array(
         $controller = new IndexController(
             $c->get('request'), $c->get('response'), $c->get('session')
         );
-        $story = new Story($c->get('validator'), $c->get('story_gateway'));
-        $controller->setStory($story);
+        $controller->setStory($c->get('story'));
         $controller->attach($c->get('is_auth_observer'));
 
         return $controller;
@@ -110,13 +112,18 @@ return array(
         $controller = new StoryController(
             $c->get('request'), $c->get('response'), $c->get('session')
         );
-        $story = new Story($c->get('validator'), $c->get('story_gateway'));
-        $controller->setStory($story);
+        $controller->setStory($c->get('story'));
         $controller->attach($c->get('is_auth_observer'));
 
         return $controller;
     },
     'story_gateway' => function(Container $c) {
         return new StoryGateway($c->get('connection'));
+    },
+    'story' => function(Container $c) {
+        $story = new Story($c->get('story_gateway'));
+        $story->setValidator($c->get('validator'));
+
+        return $story;
     },
 );
