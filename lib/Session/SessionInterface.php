@@ -1,20 +1,10 @@
 <?php
 namespace Session;
 
-interface SessionInterface
+use \Utils\MapInterface;
+
+interface SessionInterface extends MapInterface
 {
-    /**
-     * @param string $key
-     * @param string $default
-     */
-    public function get($key, $default = null);
-
-    /**
-     * @param string $key
-     * @param string $value
-     */
-    public function set($key, $value);
-
     /**
      * @return void
      */

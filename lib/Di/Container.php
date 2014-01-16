@@ -9,10 +9,13 @@ class Container
     protected $objects;
 
     /**
-     * @var factories
+     * @var array
      */
     protected $factories;
 
+    /**
+     * @param array $factories
+     */
     public function __construct(array $factories)
     {
         $this->objects = array();

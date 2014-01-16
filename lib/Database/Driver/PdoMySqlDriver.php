@@ -6,11 +6,6 @@ use \Database\Connection\PdoConnection;
 class PdoMySqlDriver implements DriverInterface
 {
     /**
-     * @var string
-     */
-    public static $CLASS = __CLASS__;
-
-    /**
      * @see \Database\Driver\DriverInterface::connect()
      */
     public function connect($username, $password, array $params)

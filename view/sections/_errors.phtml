@@ -1,0 +1,7 @@
+<?php if (is_array($this->errors) && count($this->errors > 0)) : ?>
+    <ul class="errors">
+    <?php foreach ($this->errors as $error) : ?>
+        <li><?php echo $error ?>
+    <?php endforeach ?>
+    </ul>
+<?php endif ?>

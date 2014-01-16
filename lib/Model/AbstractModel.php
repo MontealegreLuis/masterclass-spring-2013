@@ -1,28 +1,52 @@
 <?php
 namespace Model;
 
-use \Database\Table\TableGateway;
+use \Utils\ValidatorInterface;
 
 abstract class AbstractModel
 {
     /**
-     * @var \Database\Table\TableGateway
+     * @var \Utils\ValidatorInterface
      */
-    protected $table;
+    protected $validator;
 
     /**
-     * @param \Database\Table\TableGateway $connection
+     * @var array
      */
-    public function __construct(TableGateway $table)
+    protected $rules;
+
+    /**
+     * @return \Utils\ValidatorInterface
+     */
+    protected function getValidator()
     {
-        $this->table = $table;
+        return $this->validator;
     }
 
     /**
-     * @return \Database\Connection
+     * @param \Utils\ValidatorInterface $validator
      */
-    protected function getTable()
+    public function setValidator(ValidatorInterface $validator)
     {
-        return $this->table;
+        $this->validator = $validator;
+    }
+
+    /**
+     * @param array $values
+     * @return boolean
+     */
+    public function isValid(array $values)
+    {
+        $this->getValidator()->setRules($this->rules);
+
+        return $this->getValidator()->isValid($values);
+    }
+
+    /**
+     * @return array
+     */
+    public function getErrors()
+    {
+        return $this->getValidator()->getErrorMessages();
     }
 }

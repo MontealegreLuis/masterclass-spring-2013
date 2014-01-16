@@ -1,7 +1,7 @@
 <?php
 namespace Database\Table;
 
-class StoryGateway extends TableGateway
+class StoryGateway extends TableGateway implements StoryGatewayInterface
 {
     /**
      * @param string $headline
@@ -29,6 +29,7 @@ class StoryGateway extends TableGateway
                 FROM story s
                 LEFT OUTER JOIN comment c
                     ON s.id = c.story_id
+                GROUP BY s.id
                 ORDER BY s.created_on DESC';
 
         return $this->fetchAll($sql);
